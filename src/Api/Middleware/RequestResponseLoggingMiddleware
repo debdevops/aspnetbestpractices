@@ -1,0 +1,35 @@
+using System.Diagnostics;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+
+namespace Api.Middleware;
+
+public class RequestResponseLoggingMiddleware : IMiddleware
+{
+    private readonly ILogger<RequestResponseLoggingMiddleware> _logger;
+
+    public RequestResponseLoggingMiddleware(ILogger<RequestResponseLoggingMiddleware> logger)
+    {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    {
+        // Log request
+        _logger.LogInformation("Request {Header} {Method} {Path} from {RemoteIp}",
+            context.Request.Headers["X-Request-ID"].FirstOrDefault() ?? "N/A",
+            context.Request.Method,
+            context.Request.Path,
+            context.Connection.RemoteIpAddress);
+
+        var stopwatch = Stopwatch.StartNew();
+        await next(context);
+        stopwatch.Stop();
+
+        // Log response
+        _logger.LogInformation("Response {StatusCode} in {ElapsedMs}ms",
+            context.Response.StatusCode,
+            stopwatch.ElapsedMilliseconds);
+    }
+}
