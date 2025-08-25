@@ -1,0 +1,30 @@
+## Ignore Visual Studio temporary files, build results, and user-specific files
+**/[Bb]in/
+**/[Oo]bj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# NuGet
+*.nupkg
+packages/
+
+# dotnet user secrets
+secrets.json
+appsettings.*.Local.json
+
+# Logs
+*.log
+
+# Node
+node_modules/
