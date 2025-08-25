@@ -11,11 +11,16 @@ public sealed class HttpContextHeadersDelegatingHandler : DelegatingHandler
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<HttpContextHeadersDelegatingHandler> _logger;
+    private readonly HeaderPropagationOptions _options;
 
-    public HttpContextHeadersDelegatingHandler(IHttpContextAccessor httpContextAccessor, ILogger<HttpContextHeadersDelegatingHandler> logger)
+    public HttpContextHeadersDelegatingHandler(
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<HttpContextHeadersDelegatingHandler> logger,
+        Microsoft.Extensions.Options.IOptions<HeaderPropagationOptions> options)
     {
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _options = options?.Value ?? new HeaderPropagationOptions();
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -25,9 +30,7 @@ public sealed class HttpContextHeadersDelegatingHandler : DelegatingHandler
             var context = _httpContextAccessor.HttpContext;
             if (context != null)
             {
-                // List headers we typically want to propagate. Adjust as needed.
-                var headersToCopy = new[] { "traceparent", "trace-state", "Authorization", "X-Request-ID", "X-Correlation-ID" };
-
+                var headersToCopy = _options.HeadersToPropagate ?? new List<string>();
                 foreach (var header in headersToCopy)
                 {
                     if (context.Request.Headers.TryGetValue(header, out var values))

@@ -132,16 +132,22 @@ builder.Services.Configure<GzipCompressionProviderOptions>(o => o.Level = Compre
 // Request Decompression (gzip, br, deflate by default)
 builder.Services.AddRequestDecompression();
 
-// CORS (only if called from browsers)
+// CORS (only if called from browsers) - allowed origins read from configuration
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+                     ?? new[] { "https://frontend.example" };
+
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("api", p => p
-        .WithOrigins("https://frontend.example") // TODO: set exact origin(s)
+        .WithOrigins(allowedOrigins)
         .WithMethods("GET", "POST", "PUT", "DELETE")
         .AllowAnyHeader()
         .WithExposedHeaders("ETag", "api-supported-versions")
         .SetPreflightMaxAge(TimeSpan.FromHours(1)));
 });
+
+// Configure header propagation options
+builder.Services.Configure<HeaderPropagationOptions>(builder.Configuration.GetSection("HeaderPropagation"));
 
 
 // Middlewares & cache
