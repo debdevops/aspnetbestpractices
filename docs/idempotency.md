@@ -1,30 +1,37 @@
 # Idempotency (Tutorial)
 
-This project implements idempotency for POST requests via `IdempotencyMiddleware`.
+This project implements idempotency via `IdempotencyMiddleware`.
 
-What it does
-- Applies only to `POST` requests.
-- Requires an `Idempotency-Key` header (GUID, <= 128 chars) to activate.
-- Hashes the request body and caches successful 2xx responses for 12 hours.
-- Returns cached response with header `Idempotency-Cache: hit` when available.
+## What it does
 
-Why use it
+- Applies when clients send an `Idempotency-Key` header (GUID, ≤ 128 chars).
+- Hashes the request body (if present) and caches successful 2xx responses for 12 hours.
+- Replays with `Idempotency-Cache: hit` when there is a match.
+
+## Why use it
+
 - Protects downstream systems from duplicate side-effects.
 - Allows safe retries for clients.
 
-How to test locally (PowerShell)
+## How to test locally
 
-1) Run the API (you already do this):
-```powershell
-cd C:\Users\debas\source\repos\aspnetbestpractices\src\Api
+1) Run the API:
+
+```bash
+cd src/Api
 dotnet run --launch-profile http
 ```
 
 2) Create an idempotent POST (first request will be a miss):
 ```powershell
 $body = @{ title = 'idem test'; notes = 'first' } | ConvertTo-Json
-$headers = @{ 'Idempotency-Key' = [guid]::NewGuid().ToString() }
-Invoke-RestMethod -Method Post -Uri 'http://localhost:5232/api/v1/todos' -ContentType 'application/json' -Body $body -Headers $headers -Verbose
+$key = [guid]::NewGuid().ToString()
+Invoke-RestMethod -Method Post `
+  -Uri 'http://localhost:5232/api/v1/todos?api-version=1.0' `
+  -ContentType 'application/json' `
+  -Body $body `
+  -Headers @{ 'Idempotency-Key' = $key } `
+  -Verbose
 ```
 
 3) Repeat the same request with the same `Idempotency-Key` and same body. The response should come from the cache and the response header `Idempotency-Cache` will be `hit`.
