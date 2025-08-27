@@ -11,6 +11,7 @@ namespace Api.Controllers.v1;
 [ApiController]
 [Route("api/v{version:apiVersion}/todos")]
 [ApiVersion("1.0")]
+[Microsoft.AspNetCore.Authorization.Authorize]
 public sealed class TodosController : ControllerBase
 {
     private readonly ITodoRepository _repo;
@@ -23,10 +24,12 @@ public sealed class TodosController : ControllerBase
     }
 
     [HttpGet]
+    [Microsoft.AspNetCore.Authorization.AllowAnonymous]
     public async Task<ActionResult<IEnumerable<TodoItem>>> GetAll(CancellationToken ct)
         => Ok(await _repo.GetAllAsync(ct));
 
     [HttpGet("{id:guid}")]
+    [Microsoft.AspNetCore.Authorization.AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
         var item = await _repo.GetAsync(id, ct);

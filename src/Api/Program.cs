@@ -17,6 +17,11 @@ using Polly.Contrib.WaitAndRetry;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Authentication;
+// feature management
+using Microsoft.FeatureManagement;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -148,6 +153,64 @@ builder.Services.AddCors(o =>
 
 // Configure header propagation options
 builder.Services.Configure<HeaderPropagationOptions>(builder.Configuration.GetSection("HeaderPropagation"));
+
+// Feature management for runtime toggles
+builder.Services.AddFeatureManagement();
+
+// Add authorization services
+builder.Services.AddAuthorization();
+
+// Register known schemes: ApiKey, JwtBearer (named "Jwt"), AzureAd (registered via Microsoft.Identity.Web as JwtBearer)
+builder.Services.AddAuthentication()
+    .AddScheme<ApiKeyAuthenticationSchemeOptions, ApiKeyAuthenticationHandler>("ApiKey", options =>
+    {
+        options.ApiKey = builder.Configuration["Authentication:ApiKey"];
+    })
+    .AddJwtBearer("Jwt", options =>
+    {
+        options.Authority = builder.Configuration["Authentication:JwtAuthority"];
+        options.Audience = builder.Configuration["Authentication:JwtAudience"];
+    })
+    // Azure AD binding; this will register JwtBearer as well and can be selected dynamically
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+// Add a policy scheme named "Dynamic" that selects the active scheme at runtime
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "Dynamic";
+})
+.AddPolicyScheme("Dynamic", "Dynamic authentication scheme", options =>
+{
+    options.ForwardDefaultSelector = context =>
+    {
+        // If feature flag to enable auth is false, return a scheme that does no authentication
+        var featMgr = context.RequestServices.GetService<Microsoft.FeatureManagement.IFeatureManagerSnapshot>();
+        var cfg = context.RequestServices.GetService<IConfiguration>();
+
+        var enableAuth = true;
+        try
+        {
+            // Feature name is 'EnableAuth' under Features
+            enableAuth = featMgr?.IsEnabledAsync("EnableAuth").GetAwaiter().GetResult() ?? true;
+        }
+        catch { enableAuth = true; }
+
+        if (!enableAuth)
+            return "NoAuth";
+
+        var providerStr = cfg?["Authentication:Provider"] ?? "AzureAd";
+        return providerStr switch
+        {
+            "ApiKey" => "ApiKey",
+            "Jwt" => "Jwt",
+            "AzureAd" => JwtBearerDefaults.AuthenticationScheme,
+            _ => JwtBearerDefaults.AuthenticationScheme
+        };
+    };
+});
+
+// Register NoAuth scheme
+builder.Services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, Api.Security.NoAuthHandler>("NoAuth", _ => { });
 
 
 // Middlewares & cache
