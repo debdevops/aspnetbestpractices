@@ -25,7 +25,7 @@ Swagger UI: http://localhost:5232/swagger
 
 Local testing notes:
 - For convenience the project is configured to skip auth when running with the `Local` profile or when `Features:EnableAuth=false` (see `Properties/launchSettings.json`).
-- We also added `[AllowAnonymous]` to the `Create` (`POST /api/v1/todos`) action to make POST testing straightforward in local/dev.
+- The project uses a `NoAuth` handler in Local to provide a lightweight principal so `[Authorize]` endpoints succeed during local testing (no production credentials required).
 
 ApiKey sample (when auth is enabled):
 
@@ -116,6 +116,19 @@ $body = @{ title = 'idem test'; notes = 'idem' } | ConvertTo-Json
 $headers = @{ 'Idempotency-Key' = [guid]::NewGuid().ToString() }
 Invoke-RestMethod -Method Post -Uri 'http://localhost:5232/api/v1/todos' -ContentType 'application/json' -Body $body -Headers $headers
 ```
+
+### Try it (PowerShell quick steps)
+
+Run the http launch profile, open Swagger, and verify NoAuth behavior:
+
+```powershell
+cd C:\Users\debas\source\repos\aspnetbestpractices\src\Api
+dotnet run --launch-profile http
+# Wait for startup log, then open Swagger in default browser (Windows PowerShell):
+Start-Process 'http://localhost:5232/swagger'
+```
+
+Look for a startup log like: `Authentication/authorization disabled for local/testing` indicating `NoAuth` is active.
 
 cURL equivalents are provided in the sections above.
 
