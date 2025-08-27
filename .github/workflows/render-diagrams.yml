@@ -18,13 +18,14 @@ jobs:
         run: npm install -g @mermaid-js/mermaid-cli
       - name: Render diagrams
         run: |
-          mmdc -i docs/diagrams/auth-flow.mmd -o docs/diagrams/auth-flow.png -w 2560 -H 1440
-          mmdc -i docs/diagrams/idempotency-flow.mmd -o docs/diagrams/idempotency-flow.png -w 2560 -H 1440
-          mmdc -i docs/diagrams/idempotency-detailed.mmd -o docs/diagrams/idempotency-detailed.png -w 2560 -H 1440
-          mmdc -i docs/diagrams/csp-flow.mmd -o docs/diagrams/csp-flow.png -w 2560 -H 1440
-          mmdc -i docs/diagrams/opentelemetry-flow.mmd -o docs/diagrams/opentelemetry-flow.png -w 2560 -H 1440
-          mmdc -i docs/diagrams/rate-limiting-flow.mmd -o docs/diagrams/rate-limiting-flow.png -w 2560 -H 1440
-          mmdc -i docs/diagrams/auth-token-sequence.mmd -o docs/diagrams/auth-token-sequence.png -w 2560 -H 1440
+          # Use --no-sandbox on hosted runners to avoid Chromium sandbox errors
+          mmdc --no-sandbox -i docs/diagrams/auth-flow.mmd -o docs/diagrams/auth-flow.png -w 2560 -H 1440
+          mmdc --no-sandbox -i docs/diagrams/idempotency-flow.mmd -o docs/diagrams/idempotency-flow.png -w 2560 -H 1440
+          mmdc --no-sandbox -i docs/diagrams/idempotency-detailed.mmd -o docs/diagrams/idempotency-detailed.png -w 2560 -H 1440
+          mmdc --no-sandbox -i docs/diagrams/csp-flow.mmd -o docs/diagrams/csp-flow.png -w 2560 -H 1440
+          mmdc --no-sandbox -i docs/diagrams/opentelemetry-flow.mmd -o docs/diagrams/opentelemetry-flow.png -w 2560 -H 1440
+          mmdc --no-sandbox -i docs/diagrams/rate-limiting-flow.mmd -o docs/diagrams/rate-limiting-flow.png -w 2560 -H 1440
+          mmdc --no-sandbox -i docs/diagrams/auth-token-sequence.mmd -o docs/diagrams/auth-token-sequence.png -w 2560 -H 1440
       - name: Commit generated images
         run: |
           git config user.name "github-actions[bot]"
