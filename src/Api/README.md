@@ -259,14 +259,6 @@ curl -i -X DELETE "https://localhost:{port}/api/v1/todos/{id}"
 
 ---
 
-## 📜 License
-
-MIT (or your org’s standard)
-
-```
-
----
-
 ✅ Now you can copy this entire block and paste it straight into `src/Api/README.md`.  
 
 Do you also want me to prepare a **root-level README.md** (for the whole solution, not just `Api`) that links to this file and `docs/`?
