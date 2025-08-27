@@ -21,7 +21,12 @@ public class NoAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        // No authentication performed; return NoResult so authorization can handle unauthenticated requests.
-        return Task.FromResult(AuthenticateResult.NoResult());
+    // For local/testing scenarios where the Dynamic policy forwards to "NoAuth",
+    // return a lightweight authenticated principal so [Authorize] succeeds.
+    var claims = new[] { new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, "LocalDev") };
+    var identity = new System.Security.Claims.ClaimsIdentity(claims, Scheme.Name);
+    var principal = new System.Security.Claims.ClaimsPrincipal(identity);
+    var ticket = new AuthenticationTicket(principal, Scheme.Name);
+    return Task.FromResult(AuthenticateResult.Success(ticket));
     }
 }

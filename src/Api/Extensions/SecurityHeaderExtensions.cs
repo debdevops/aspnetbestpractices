@@ -30,7 +30,10 @@ public static class SecurityHeaderExtensions
             ctx.Response.Headers.Pragma = "no-cache";
             ctx.Response.Headers.Remove("Server");
 
-            var isDev = env.IsDevelopment();
+        // Treat the 'Local' environment like Development for developer-time conveniences
+        // (e.g. allowing inline scripts/styles for Swagger UI). This prevents CSP from
+        // blocking Swagger's inline styles when running via the 'Local' profile.
+        var isDev = env.IsDevelopment() || string.Equals(env.EnvironmentName, "Local", StringComparison.OrdinalIgnoreCase);
             var devScript = $"{opts.ScriptSrc} 'unsafe-inline' 'unsafe-eval'";
             var devStyle  = $"{opts.StyleSrc} 'unsafe-inline'";
 

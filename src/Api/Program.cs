@@ -313,8 +313,8 @@ app.UseMiddleware<IdempotencyMiddleware>();
 // Compress responses
 app.UseResponseCompression();
 
-// Swagger only in Dev
-if (app.Environment.IsDevelopment())
+// Swagger in Development and Local environments (Local used by launchSettings.json)
+if (app.Environment.IsDevelopment() || string.Equals(app.Environment.EnvironmentName, "Local", StringComparison.OrdinalIgnoreCase))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -322,6 +322,24 @@ if (app.Environment.IsDevelopment())
 
 // CORS (if needed)
 app.UseCors("api");
+
+// Authentication & Authorization
+// In production-like environments enable authentication and authorization.
+// For local developer workflows (ASPNETCORE_ENVIRONMENT=Local) we skip these
+// middlewares to make manual testing and Swagger exploration easier.
+var isLocalEnv = string.Equals(app.Environment.EnvironmentName, "Local", StringComparison.OrdinalIgnoreCase);
+// Also allow disabling auth via configuration (Features:EnableAuth = false) for CI/local runs
+var enableAuth = app.Configuration.GetValue<bool?>("Features:EnableAuth") ?? true;
+if (isLocalEnv || !enableAuth)
+{
+    app.Logger.LogInformation("Authentication/authorization disabled for local/testing (IsLocal={IsLocal}, EnableAuth={EnableAuth})", isLocalEnv, enableAuth);
+}
+else
+{
+    // Ensure authentication runs before authorization and before hitting controllers
+    app.UseAuthentication();
+    app.UseAuthorization();
+}
 
 // Controllers
 app.MapControllers().RequireRateLimiting(RateLimitingExtensions.PublicPolicy);
