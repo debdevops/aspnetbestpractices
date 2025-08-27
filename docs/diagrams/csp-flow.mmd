@@ -1,0 +1,11 @@
+sequenceDiagram
+  participant B as Browser
+  participant A as API
+  B->>A: GET /swagger
+  A-->>B: 200 + CSP header
+  B->>B: Browser enforces CSP
+  alt Local
+    A-->>B: CSP allows inline
+  else
+    A-->>B: CSP blocks inline
+  end

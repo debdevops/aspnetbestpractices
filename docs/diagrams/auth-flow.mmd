@@ -1,0 +1,11 @@
+flowchart LR
+  A[Client] --> B{EnableAuth}
+  B -- no --> C[NoAuth]
+  B -- yes --> D{Provider}
+  D -->|ApiKey| E[ApiKey Handler]
+  D -->|JWT| F[JWT Handler]
+  D -->|AzureAD| G[Azure AD]
+  C --> H[Controller]
+  E --> H
+  F --> H
+  G --> H

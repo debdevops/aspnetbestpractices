@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant Client
+    participant API
+    participant Middleware as IdempotencyMiddleware
+    participant Repo as Repository
+    participant Cache as IdempotencyCache
+
+    Client->>API: POST /api/v1/todos (Idempotency-Key: K)
+    API->>Middleware: pass request
+    Middleware->>Middleware: Validate Idempotency-Key (GUID)
+    Middleware->>Middleware: Is JSON content-type?
+    alt Invalid key or not JSON
+        Middleware-->>Client: 400 Bad Request
+    else proceed
+        Middleware->>Middleware: Compute body-hash
+        Middleware->>Cache: Query cache for key(path|K|hash)
+        alt Cache hit
+            Cache-->>Middleware: cached response (status, body, ETag)
+            Middleware-->>Client: return cached response (Idempotency-Cache: hit)
+        else Cache miss
+            Middleware->>Cache: acquire lock for cacheKey
+            Middleware->>API: invoke controller
+            API->>Repo: Create resource
+            Repo-->>API: Created entity (with ETag)
+            API-->>Middleware: response (201 Created)
+            Middleware->>Cache: store response with TTL (if 2xx)
+            Cache-->>Middleware: ack
+            Middleware-->>Client: 201 Created (Idempotency-Cache: miss)
+            Middleware->>Cache: release lock
+        end
+    end

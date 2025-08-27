@@ -1,0 +1,14 @@
+flowchart LR
+  subgraph Client
+    C[Client Requests]
+  end
+  subgraph API
+    RL[RateLimiter]
+    GW[Gateway/Ingress]
+  end
+  C --> GW
+  GW --> RL
+  RL -->|allow| API
+  RL -->|throttle| Client
+  style RL fill:#fdd,stroke:#333
+  click GW "https://example.com" "Gateway docs"

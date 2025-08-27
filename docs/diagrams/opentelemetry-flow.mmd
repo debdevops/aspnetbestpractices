@@ -1,0 +1,13 @@
+sequenceDiagram
+  participant Svc as Service
+  participant OTEL as OTEL Collector
+  participant Backend as Tracing Backend (Jaeger)
+  participant Export as Exporter
+
+  Svc->>OTEL: Create spans (incoming HTTP request)
+  Svc->>Exporter: Export spans/metrics (OTLP)
+  Export-->>OTEL: OTLP data
+  OTEL->>Backend: Forward traces
+  Backend-->>User: Visualize traces in UI
+
+  Note over Svc,OTEL: Instrumentation SDK (automatic + manual) produces context
