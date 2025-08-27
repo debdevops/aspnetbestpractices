@@ -46,15 +46,6 @@ sequenceDiagram
   B->>B: Browser enforces CSP; forbids inline styles unless allowed
 ```
 
-Converting diagram to PNG
-
-- Install mermaid-cli and run:
-
-```powershell
-npm install -g @mermaid-js/mermaid-cli
-mmdc -i docs/diagrams/csp-flow.mmd -o docs/diagrams/csp-flow.png -w 1920 -H 1080
-```
-
 Screenshots to include
 
 - `screenshots/HttpGet1.png`, `screenshots/HttpGet2.png` (Swagger pages and example requests).

@@ -26,5 +26,3 @@ Notes
 Diagram
 
 ![OpenTelemetry flow](docs/diagrams/opentelemetry-flow.png)
-
-- If you need I can add a minimal docker-compose that runs an otel-collector + Jaeger. (Removed for now; you requested docker-related code be removed.)

@@ -12,7 +12,3 @@ This `docs/` folder contains focused tutorials, examples and diagrams for the fe
 - `opentelemetry.md` - OpenTelemetry setup and local verification.
 - `health.md` - Health endpoints and readiness/liveness checks.
 - `diagrams/` - Mermaid diagrams for flows.
-
-Open the files below for step-by-step instructions and sample commands (PowerShell/curl). Screenshots you produced are in the repo `screenshots/` folder and referenced from each document.
-
-If you want, I can also produce a small Postman collection or add these docs into the repository root `README.md`.
