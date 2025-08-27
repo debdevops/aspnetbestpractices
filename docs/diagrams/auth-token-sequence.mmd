@@ -1,0 +1,19 @@
+sequenceDiagram
+  participant Client
+  participant API
+  participant Auth as Identity Provider
+  participant Backend
+
+  Client->>Auth: obtain token (client credentials / interactive)
+  Auth-->>Client: access_token
+  Client->>API: Request with Authorization: Bearer <token>
+  API->>Auth: Introspect/validate token (or local JWT validation)
+  alt valid
+    Auth-->>API: token valid, claims
+    API->>Backend: perform operation as user
+    Backend-->>API: result
+    API-->>Client: 200 OK
+  else invalid
+    Auth-->>API: token invalid
+    API-->>Client: 401 Unauthorized
+  end

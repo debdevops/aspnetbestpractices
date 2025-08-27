@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant C as Client
+    participant A as API
+    participant Cache as IdempotencyCache
+
+    C->>A: POST /api/v1/todos (Idempotency-Key: guid)
+    A->>A: Read body, compute body-hash
+    A->>Cache: Lookup cacheKey(path|key|hash)
+    alt cache hit
+        Cache-->>A: cached response
+        A-->>C: 200/201 + body (Idempotency-Cache: hit)
+    else cache miss
+        A->>A: acquire lock for cacheKey
+        A->>A: invoke controller to create resource
+        A->>Cache: store successful 2xx response with TTL
+        A-->>C: 201 Created (Idempotency-Cache: miss)
+    end
