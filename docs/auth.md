@@ -62,8 +62,6 @@ flowchart LR
   D -->|AzureAd| G[Microsoft Identity Web]
 ```
 
-To convert the above diagram to PNG at high resolution use the mermaid-cli command shown in other docs.
-
 Screenshots
 
 - `screenshots/HttpPost1.png` shows a successful POST; use it in README to show request/response.

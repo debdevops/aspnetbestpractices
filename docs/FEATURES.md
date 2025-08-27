@@ -153,9 +153,3 @@ Screenshot
 ![Health screenshot](screenshots/HttpGet1.png)
 
 ---
-
-If you want I can:
-
-- Embed the generated PNGs into the repo `docs/` directory (I already referenced them) and commit the rendered PNGs if you prefer to store them in the repo.
-- Create a Postman collection for validation flows.
-- Add a GitHub Action to render mermaid diagrams on push and commit the PNGs.

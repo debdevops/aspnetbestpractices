@@ -19,5 +19,4 @@ Notes
 Diagram
 
 ![Rate limiting flow](docs/diagrams/rate-limiting-flow.png)
-- In production ensure limits are sized to match expected traffic and use distributed counters where needed.
 
