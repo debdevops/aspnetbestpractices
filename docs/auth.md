@@ -34,7 +34,11 @@ Verify each mode
 Sample request:
 
 ```bash
-curl -X POST "http://localhost:5232/api/v1/todos" -H "Content-Type: application/json" -H "X-API-Key: YOUR_KEY" -d '{"title":"t","notes":"n"}'
+```bash
+curl -X POST "http://localhost:5232/api/v1/todos" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_KEY" \
+  -d '{"title":"t","notes":"n"}'
 ```
 
 ## JWT

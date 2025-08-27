@@ -18,7 +18,7 @@ Example (PowerShell)
 ```powershell
 # Create
 $body = @{ title = 'cache test'; notes = 'cache' } | ConvertTo-Json
-$created = Invoke-RestMethod -Method Post -Uri 'http://localhost:5232/api/v1/todos' -ContentType 'application/json' -Body $body
+$created = Invoke-RestMethod -Method Post -Uri "http://localhost:5232/api/v1/todos" -ContentType 'application/json' -Body $body
 # Get and extract ETag
 $resp = Invoke-WebRequest -Method Get -Uri "http://localhost:5232/api/v1/todos/$($created.Id)"
 $etag = $resp.Headers['ETag']
