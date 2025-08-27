@@ -1,10 +1,4 @@
-Understood 👍
-What you want is the **entire file content itself** in **Markdown format** (not my explanations around it).
-Here’s the **ready-to-paste `README.md`** file — you can copy this block as-is into your `src/Api/README.md`.
 
----
-
-````markdown
 # Best-Practices API (ASP.NET Core 8)
 
 Production-ready template showcasing **secure, observable, resilient REST APIs** on .NET 8.
@@ -258,8 +252,3 @@ curl -i -X DELETE "https://localhost:{port}/api/v1/todos/{id}"
 * Tune OpenTelemetry sampling/logging to avoid PII and control cost.
 
 ---
-
-✅ Now you can copy this entire block and paste it straight into `src/Api/README.md`.  
-
-Do you also want me to prepare a **root-level README.md** (for the whole solution, not just `Api`) that links to this file and `docs/`?
-```
