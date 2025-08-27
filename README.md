@@ -49,11 +49,11 @@ dotnet run --project src/Api
 ```mermaid
 flowchart LR
   Client[Client / Browser] -->|HTTPS| API[ASP.NET Core API]
-  API -->|Validate & Route| Middleware[Middleware Pipeline]
-  Middleware --> Controllers[Controllers]
-  Controllers --> Repo[Repository (InMemory/DB)]
+  API -->|Validate & Route| MW[Middleware Pipeline]
+  MW --> Controllers[Controllers]
+  Controllers --> Repo[Repository (InMemory / DB)]
   Controllers --> Downstream[HttpClient + Polly]
-  API -->|Metrics/Traces/Logs| Observability[(Azure Application Insights)]
+  API -->|Metrics / Traces / Logs| Observability[(Azure Application Insights)]
 ```
 
 ---
@@ -70,7 +70,7 @@ flowchart TD
   F --> G[JsonOnlyMiddleware]
   G --> H[IdempotencyMiddleware]
   H --> I[ExceptionHandlingMiddleware]
-  I --> J[Routing → Controllers]
+  I --> J[Routing to Controllers]
   J --> K[ResponseCompression]
   K --> L[Swagger (Dev only)]
   L --> M[Health Checks / Endpoints]
